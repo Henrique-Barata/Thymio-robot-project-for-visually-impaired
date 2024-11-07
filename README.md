@@ -1,2 +1,2 @@
 # Thymio-robot-project-for-visually-impaired
-The project was developed to explore HRI using a Thymio robot for a Maze Navigation Game for the visually impaired. Due to missing RC5 protocol codes, a smartphone app prototype was created for demonstration purposes. The robot is controlled via its original remote with buttons for movement, stopping, and resetting the game.
+The objective of this work was to explore Human-Robot Interaction (HRI) by creating a Maze Navigation Game using a Thymio robot for visually impaired users. For the project it was develop an accessible smartphone app with auditory and vibrotactile feedback, enabling navigation through voice commands, buttons, and gyroscope controls.
