@@ -1,0 +1,450 @@
+<!DOCTYPE aesl-source>
+<network>
+
+
+<!--list of global events-->
+
+
+<!--list of constants-->
+
+
+<!--show keywords state-->
+<keywords flag="true"/>
+
+
+<!--node thymio-II-->
+<node nodeId="1" name="thymio-II">var averageDistance = 0
+var direcao = 1
+var nextdirecao = 1
+var moving = 0
+var path[200]
+var pathcount = 0
+var x = 0
+var y = 0
+var xnode
+var ynode
+var nodes[28]
+var i
+var k = 0
+var xaux
+var yaux
+var go = 0
+var nextnode = -1
+var color
+var nextcolor
+var pathInicioAzul[6]
+var pathInicioVermelho[7]
+var pathInicioVerde[8]
+var pathVerdeVermelho[8]
+var pathVermelhoAzul[8]
+var pathVerdeAzul[9]
+
+pathInicioAzul[0] = 0
+pathInicioAzul[1] = 1
+pathInicioAzul[2] = 2
+pathInicioAzul[3] = 3
+pathInicioAzul[4] = 4
+pathInicioAzul[5] = 5
+
+pathInicioVermelho[0] = 0
+pathInicioVermelho[1] = 1
+pathInicioVermelho[2] = 2
+pathInicioVermelho[3] = 6
+pathInicioVermelho[4] = 11
+pathInicioVermelho[5] = 12
+pathInicioVermelho[6] = 13
+
+pathInicioVerde[0] = 0
+pathInicioVerde[1] = 1
+pathInicioVerde[2] = 2
+pathInicioVerde[3] = 6
+pathInicioVerde[4] = 7
+pathInicioVerde[5] = 8
+pathInicioVerde[6] = 9
+pathInicioVerde[7] = 10
+
+pathVerdeVermelho[0] = 10
+pathVerdeVermelho[1] = 9
+pathVerdeVermelho[2] = 8
+pathVerdeVermelho[3] = 7
+pathVerdeVermelho[4] = 6
+pathVerdeVermelho[5] = 11
+pathVerdeVermelho[6] = 12
+pathVerdeVermelho[7] = 13
+
+pathVermelhoAzul[0] = 13
+pathVermelhoAzul[1] = 12
+pathVermelhoAzul[2] = 11
+pathVermelhoAzul[3] = 6
+pathVermelhoAzul[4] = 2
+pathVermelhoAzul[5] = 3
+pathVermelhoAzul[6] = 4
+pathVermelhoAzul[7] = 5
+
+pathVerdeAzul[0] = 10
+pathVerdeAzul[1] = 9
+pathVerdeAzul[2] = 8
+pathVerdeAzul[3] = 7
+pathVerdeAzul[4] = 6
+pathVerdeAzul[5] = 2
+pathVerdeAzul[6] = 3
+pathVerdeAzul[7] = 4
+pathVerdeAzul[8] = 5
+
+
+nodes[0] = 0
+nodes[1] = 0
+
+nodes[2] = 0
+nodes[3] = 1400
+
+nodes[4] = 700
+nodes[5] = 1400
+
+nodes[6] = 800
+nodes[7] = 2400
+
+nodes[8] = 200
+nodes[9] = 2400
+
+nodes[10] = 200
+nodes[11] = 1900
+
+nodes[12] = 1400
+nodes[13] = 1400
+
+nodes[14] = 1400
+nodes[15] = 2700
+
+nodes[16] = 2300
+nodes[17] = 2700
+
+nodes[18] = 2100
+nodes[19] = 2200
+
+nodes[20] = 1900
+nodes[21] = 2200
+
+nodes[22] = 2300
+nodes[23] = 1400
+
+nodes[24] = 2300
+nodes[25] = 800
+
+nodes[26] = 1700
+nodes[27] = 800
+
+
+color = 3
+timer.period[0] = 50
+
+
+#verde
+#vermelho
+#azul
+#base
+
+
+onevent rc5
+	k = 0
+ 	if	rc5.command == 2 then
+ 		if  nextnode &lt; 0 then
+ 			
+		 		if color == 2 then
+		 			call sound.play(5)
+		 		else 
+				 		if(color == 0) then
+				 			#callsub createpathVerdePrAzul
+				 			for i in 1:8 do
+								path[i*2] = nodes[pathVerdeAzul[i] * 2]
+								path[(i*2)+1] = nodes[(pathVerdeAzul[i] * 2) +1]
+							end
+							 			
+				 		elseif(color == 1) then
+				 			#callsub createpathVermelhoPrAzul
+							for i in 1:7 do
+								path[i*2] = nodes[pathVermelhoAzul[i] * 2]
+								path[(i*2)+1] = nodes[(pathVermelhoAzul[i] * 2) +1]
+							end		
+				 		else
+					 		#callsub createpathAzul
+								for i in 1:5 do
+									path[i*2] = nodes[pathInicioAzul[i] * 2]
+									path[(i*2)+1] = nodes[(pathInicioAzul[i] * 2) +1]
+								end
+						end
+						nextcolor = 2
+						path[i*2] = -1
+						path[i*2 + 1] = -1
+						go = 1
+						timer.period[1] = 100	
+				end
+		else
+				for i in 0:8 do
+					if pathVerdeAzul[i] == nextnode then
+						for k in 0:8 do
+							if k >= i then
+								path[(k-i+1)*2] = nodes[pathVerdeAzul[k] * 2]
+								path[((k-i+1)*2)+1] = nodes[(pathVerdeAzul[k] * 2) +1]
+							end					
+						end
+					end
+				end
+			if k == 0 then
+				for i in 0:5 do
+					if pathInicioAzul[i] == nextnode then
+						for k in 0:5 do
+							if k >= i then
+								path[(k-i+1)*2] = nodes[pathInicioAzul[k] * 2]
+								path[((k-i+1)*2)+1] = nodes[(pathInicioAzul[k] * 2) +1]
+							end					
+						end
+					end
+				end
+			end
+			nextcolor = 2
+			path[k*2] = -1
+			path[k*2 + 1] = -1
+			go = 1
+			timer.period[1] = 100
+		end
+	elseif rc5.command == 0 then
+			if  color == 0 then
+				call sound.play(5)
+			else 
+				if(color == 2) then
+					#callsub createpathAzulPraVerde
+					for i in 1:8 do
+							path[i*2] = nodes[pathVerdeAzul[9-i] * 2]
+							path[(i*2)+1] = nodes[(pathVerdeAzul[9-i] * 2) +1]
+					end
+				elseif(color == 1) then
+					for i in 1:7 do
+						path[i*2] = nodes[pathVerdeVermelho[8-i] * 2]
+						path[(i*2)+1] = nodes[(pathVerdeVermelho[8-i] * 2) +1]
+					end
+				else
+					#callsub createpathVerde
+					for i in 1:7 do
+							path[i*2] = nodes[pathInicioVerde[i] * 2]
+							path[(i*2)+1] = nodes[(pathInicioVerde[i] * 2) +1]
+					end
+				end
+				nextcolor = 0
+				path[i*2] = -1
+				path[i*2 + 1] = -1
+				go = 1
+				timer.period[1] = 100	
+			end
+	elseif rc5.command == 1 then
+			if color == 1 then
+						call sound.play(5)
+			else 
+						if (color == 2) then
+							#callsub createpathAzulpraVermelho
+							for i in 1:7 do
+								path[i*2] = nodes[pathVermelhoAzul[8-i] * 2]
+								path[(i*2)+1] = nodes[(pathVermelhoAzul[8-i] * 2) +1]
+							end
+						elseif(color == 0) then
+							#callsub createpathVerdePraVermelho
+							for i in 1:7 do
+								path[i*2] = nodes[pathVerdeVermelho[i] * 2]
+								path[(i*2)+1] = nodes[(pathVerdeVermelho[i] * 2) +1]
+							end
+						else 
+							#callsub createpathVermelho
+							for i in 1:6 do
+									path[i*2] = nodes[pathInicioVermelho[i] * 2]
+									path[(i*2)+1] = nodes[(pathInicioVermelho[i] * 2) +1]
+							end
+						end
+						nextcolor = 1
+						path[i*2] = -1
+						path[i*2 + 1] = -1
+						go = 1
+						timer.period[1] = 100
+			end	
+	elseif rc5.command == 3 then
+			if color == 3 then
+						call sound.play(5)
+			else 
+						if (color == 2) then
+							for i in 1:5 do
+								path[i*2] = nodes[pathInicioAzul[5-i] * 2]
+								path[(i*2)+1] = nodes[(pathInicioAzul[5-i] * 2) +1]
+							end	
+						elseif(color == 0) then
+							for i in 1:6 do
+								path[i*2] = nodes[pathInicioVermelho[6-i] * 2]
+								path[(i*2)+1] = nodes[(pathInicioVermelho[6-i] * 2) +1]
+							end
+						else 
+							for i in 1:7 do
+								path[i*2] = nodes[pathInicioVerde[7-i] * 2]
+								path[(i*2)+1] = nodes[(pathInicioVerde[7-i] * 2) +1]
+							end
+						end
+					nextcolor = 3
+					path[i*2] = -1
+					path[i*2 + 1] = -1
+					go = 1
+					timer.period[1] = 100
+			end	
+				
+	end		
+		 if rc5.command == 80 then
+	        motor.left.target = 300
+	        motor.right.target = 300
+	    end
+	    if  rc5.command == 86 then
+	        motor.left.target = 300
+	        motor.right.target = -100
+	    end
+	        if  rc5.command == 85 then
+	        motor.left.target = -100
+	        motor.right.target = 300
+	    end
+	        if  rc5.command == 81 then
+	        motor.left.target = -200
+	        motor.right.target = -200
+	    end
+	        if  rc5.command == 87 then
+	        motor.left.target = 0
+	        motor.right.target = 0
+	    end
+    
+
+
+onevent prox
+	if prox.ground.delta[0] >= 670 and prox.ground.delta[0] &lt;= 720 then
+		call leds.top(0,0,0)
+	end
+	if prox.ground.delta[0] >= 740 and prox.ground.delta[0]  &lt;= 800 and rc5.command == 2 then
+		call leds.top(0,0,prox.ground.delta[0])
+	end
+	if prox.ground.delta[0]  >= 500 and prox.ground.delta[0] &lt;= 600 and rc5.command == 1 then
+		call leds.top(prox.ground.delta[0],0,0)
+	end
+	if prox.ground.delta[0]  >= 850 and prox.ground.delta[0] &lt;= 920 and rc5.command == 0 then
+		call leds.top(0,prox.ground.delta[0],0)
+	end
+	if prox.horizontal[2] > 4200 then
+		callsub verifyNextNode
+		callsub stop
+	end
+
+onevent timer0
+
+	averageDistance = (motor.left.target + motor.right.target)/40
+	
+	if  moving == 1 then
+			if direcao == 0 then
+				x -= averageDistance 
+			elseif  direcao == 2 then
+				x += averageDistance
+			elseif  direcao == 1 then	
+				y += averageDistance
+			elseif  direcao == 3 then	
+				y -= averageDistance
+			end
+	end			
+	
+onevent timer1
+
+	if go == 1  then
+		moving = 0
+		
+		if  path[pathcount] &lt; 0 then
+			callsub stop	
+		else
+		
+		xnode = path[pathcount]
+		ynode = path[pathcount+1]
+		
+		if pathcount &lt; 1 then
+			pathcount += 2	
+			xnode = path[pathcount]
+			ynode = path[pathcount+1]
+		end
+		callsub calcdirecao
+		#verificar se path nao e -1 que e quando acaba
+		if direcao == nextdirecao then			
+			motor.left.target = 200
+			motor.right.target = 200
+			moving = 1
+			pathcount += 2	
+			if direcao == 0 then
+				timer.period[1] = (x - xnode) * 5
+			elseif direcao == 1 then
+				timer.period[1] = (ynode - y)	* 5
+			elseif direcao == 2 then
+				timer.period[1] = (xnode - x) * 5
+			elseif direcao == 3 then
+				timer.period[1] = (y - ynode)	* 5
+			end				
+		else
+			moving = 0
+			if (direcao - nextdirecao) == -1 or (direcao - nextdirecao) == 3 then				
+				motor.left.target = 200
+			   motor.right.target = -200	
+			   direcao = nextdirecao		
+				timer.period[1] = 1000			
+			elseif (direcao - nextdirecao) == 1 or (direcao - nextdirecao) == -3  then
+				motor.left.target = -200
+			   motor.right.target = 200	
+			   direcao = nextdirecao			
+			   timer.period[1] = 1000
+			elseif (direcao - nextdirecao) == 2 or (direcao - nextdirecao) == -2  then	
+				motor.left.target = -200
+			   motor.right.target = 200	
+			   direcao = nextdirecao			
+				timer.period[1] = 2000				
+			end
+		end
+	end
+end
+
+sub calcdirecao 
+		xaux = x - xnode
+		yaux = y - ynode
+		if  (x - xnode) &lt; 0 then
+			xaux = (x - xnode) * -1
+		end
+		if  (y - ynode) &lt; 0 then
+			yaux = (y - ynode) * -1
+		end
+		
+		if  xaux > yaux then
+			if  x - xnode &lt; 0 then
+				nextdirecao = 2
+			elseif x - xnode > 0 then
+				nextdirecao = 0
+			end
+		else			
+			if y - ynode > 0 then
+				nextdirecao = 3
+			elseif y - ynode &lt; 0 then
+				nextdirecao = 1
+			end
+		end
+
+sub stop
+		moving = 0
+		motor.left.target = 0
+		motor.right.target = 0
+		color = nextcolor
+		pathcount = 0
+		go = 0
+		timer.period[1] = 0	
+			
+sub verifyNextNode	
+	for i in 0:13 do
+		if xnode == nodes[i*2] and ynode == nodes[(i*2)+1] then
+			nextnode = i			
+		end
+	end			
+</node>
+
+
+</network>
